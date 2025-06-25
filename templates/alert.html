@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Rail Security Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { display: flex; }
+        .sidebar { width: 250px; background: #2c3e50; color: #fff; height: 100vh; padding: 20px; }
+        .sidebar h2 { color: #1abc9c; }
+        .sidebar a { color: #fff; display: block; margin-top: 10px; text-decoration: none; }
+        .content { flex: 1; padding: 20px; }
+        .header { background: #1abc9c; color: #fff; padding: 20px; text-align: center; }
+        .alerts-panel { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+        .alerts-table { width: 100%; border-collapse: collapse; }
+        .alerts-table th, .alerts-table td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        .alerts-table th { background: #f2f2f2; }
+        .footer { text-align: center; padding: 20px; background: #2c3e50; color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>Metro Systems</h2>
+        <a href="#">Overview</a>
+        <a href="#">Security Alerts</a>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Metro Rail Security Dashboard</h1>
+        </div>
+
+        <div class="alerts-panel">
+            <h3>Today's Incidents</h3>
+            <table class="alerts-table">
+                <thead>
+                    <tr>
+                        <th>Train Number</th>
+                        <th>Coach Number</th>
+                        <th>Incident Type</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody id="incident-tbody">
+                    <!-- Incidents will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Metro Systems. All rights reserved.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function loadIncidents() {
+        try {
+            const response = await fetch("/get_incidents");
+            const data = await response.json();
+            const tbody = document.getElementById("incident-tbody");
+            tbody.innerHTML = "";
+
+            data.forEach(incident => {
+                const row = `
+                    <tr>
+                        <td>${incident.train_number}</td>
+                        <td>${incident.coach_number}</td>
+                        <td>${incident.incident_type}</td>
+                        <td>${incident.timestamp}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error("Error fetching incidents:", error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadIncidents();
+        setInterval(loadIncidents, 5000);  // Refresh every 5 seconds
+    });
+</script>
+</body>
+</html>

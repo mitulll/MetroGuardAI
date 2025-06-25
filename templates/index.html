@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Service</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; }
+        .container { width: 100%; max-width: 700px; margin: 20px auto; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        
+        /* Header styling */
+        .header { background: #f15a24; color: white; display: flex; justify-content: space-between; padding: 15px; }
+        .header span { font-size: 1.2em; }
+        .time { font-weight: bold; }
+
+        /* Service section */
+        .service { background: #fff; padding: 20px; }
+        .service h1 { font-size: 2.5em; margin: 10px 0; }
+        .platform { font-size: 4em; color: #f15a24; text-align: right; margin: 0; }
+        .stations { list-style: none; padding: 0; margin: 20px 0; }
+        .stations li { font-size: 1.4em; margin: 5px 0; }
+        
+        /* Coach status styling */
+        .coach-status { display: flex; justify-content: center; gap: 5px; margin: 15px 0; }
+        .coach { width: 40px; height: 40px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1em; color: white; font-weight: bold; }
+        
+        /* Default coach colors */
+        .green { background: #4caf50; }
+        .yellow { background: #ffeb3b; color: #333; }
+        .red { background: #f44336; }
+
+        /* Footer details */
+        .footer { display: flex; justify-content: space-between; align-items: center; font-size: 1.2em; color: #555; }
+        .carriages, .depart-time { margin: 10px; }
+        .depart-time strong { color: #f15a24; font-size: 2em; }
+
+        /* Passenger count for debugging */
+        .passenger-count { font-size: 1.5em; color: #f15a24; text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span>Next service</span>
+        <span>Time now: <strong id="current-time">07:47</strong></span>
+    </div>
+
+    <div class="service">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <strong style="background: #f15a24; color: white; padding: 5px 15px; border-radius: 5px; font-size: 1.5em;">T1</strong>
+                <h1>Central</h1>
+            </div>
+            <div class="platform">1</div>
+        </div>
+
+        <div class="coach-status">
+            <!-- Coach 1 dynamically changes based on passenger count -->
+            <div id="coach-1" class="coach green">1</div>
+            
+            <!-- Static Coaches -->
+            <div class="coach green">2</div>
+            <div class="coach green">3</div>
+            <div class="coach yellow">4</div>
+            <div class="coach yellow">5</div>
+            <div class="coach red">6</div>
+            <div class="coach red">7</div>
+            <div class="coach red">8</div>
+        </div>
+
+        <ul class="stations">
+            <li>Artarmon</li>
+            <li>St Leonards</li>
+            <li>Wollstonecraft</li>
+            <li>North Sydney</li>
+        </ul>
+
+        <div class="footer">
+            <div class="carriages">8 carriages | All stops</div>
+            <div class="depart-time">Departs <strong>2 min</strong></div>
+        </div>
+
+        <div class="passenger-count">Passenger Count: <strong id="passenger-count">0</strong></div>
+    </div>
+</div>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('current-time').textContent = now.toLocaleTimeString();
+    }
+
+    function fetchStatus() {
+        fetch("/get_status")
+        .then(response => response.json())
+        .then(data => {
+            const passengerCountElem = document.getElementById("passenger-count");
+            const coach1 = document.getElementById("coach-1");
+
+            // Display passenger count
+            passengerCountElem.textContent = data.count;
+
+            // Update Coach 1 color based on passenger count
+            if (data.count < 7) {
+                coach1.className = "coach green";
+            } else if (data.count >= 7 && data.count < 15) {
+                coach1.className = "coach yellow";
+            } else {
+                coach1.className = "coach red";
+            }
+
+            console.log("Passenger Count:", data.count);  // Debug log
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    setInterval(fetchStatus, 2000);
+    setInterval(updateTime, 1000);
+</script>
+
+</body>
+</html>
