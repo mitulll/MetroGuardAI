@@ -91,3 +91,8 @@ VIDEO_STREAM_URL=video_2.avi
 - ML-based violence classification using sequence modeling (e.g., LSTM)
 
 ---
+
+## 👨‍💻 Authors & Contributors
+- Adithya Anand
+- Mitul Chitkara
+- Josh Ethan N
